@@ -1,0 +1,695 @@
+import pandas as pd
+import numpy as np
+import plotly.graph_objects as go
+import plotly.express as px
+from jupyter_dash import JupyterDash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
+
+race2 = pd.read_csv('https://raw.githubusercontent.com/ngpsu22/ed_debt_vs_UBI/main/race_debt_ubi%20(3)')
+education2 = pd.read_csv('https://github.com/ngpsu22/ed_debt_vs_UBI/raw/main/education_debt_ubi%20(7)')
+age2 = pd.read_csv('https://github.com/ngpsu22/ed_debt_vs_UBI/raw/main/age_debt_ubi%20(3)')
+income2 = pd.read_csv('https://github.com/ngpsu22/ed_debt_vs_UBI/raw/main/income_debt_ubi%20(5)')
+networth2 = pd.read_csv('https://github.com/ngpsu22/ed_debt_vs_UBI/raw/main/networth_debt_ubi%20(5)')
+poor2 = pd.read_csv('https://github.com/ngpsu22/ed_debt_vs_UBI/raw/main/poor_debt_ubi%20(4)')
+
+race = race2.drop([4])
+education = education2.drop([4])
+age = age2.drop([6])
+income = income2.drop([5])
+networth = networth2.drop([5])
+poor = poor2.drop([2])
+
+# Colors from https://material.io/design/color/the-color-system.html
+BLUE = '#1976D2'
+DARK_BLUE = '#0D47A1'
+BARELY_BLUE = '#E3F2FD'
+GRAY = '#BDBDBD'
+
+colors = [BLUE,] * 5
+colors[-1] = DARK_BLUE
+
+colors2 = [BLUE,] * 7
+colors2[-1] = DARK_BLUE
+
+colors3 = [BLUE,] * 6
+colors3[-1] = DARK_BLUE
+
+colors4 = [BLUE,] * 3
+colors4[-1] = DARK_BLUE
+
+
+def bar_graph(df, x, y, title,text, marker_colors):
+
+    fig = px.bar(df, x=x, y=y,text=text, height=500, width=800)
+    
+    fig.add_annotation(text="All",
+                       font_color='red',
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=1.033, y=0.49, showarrow=False)
+    
+    fig.add_annotation(text="24.5%",
+                       font_color='red',
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=-0.068, y=0.49, showarrow=False)
+    
+    fig.add_shape(
+        type="line",
+        line=dict(dash="dot", color="red"),
+        x0=0.01,
+        x1=0.99,
+        xref="paper",
+        y0=24.5,
+        y1=24.5,
+        layer='below'
+    )
+    
+        
+    fig.update_layout(
+        title=title,
+        xaxis_title='',
+        yaxis_title='',
+        font=dict(family='Roboto'),
+        plot_bgcolor='white', 
+        uniformtext_minsize=20,
+        uniformtext_mode='hide',
+        yaxis_ticksuffix='%',
+        yaxis_tickprefix='',
+        yaxis_separatethousands=True,
+        xaxis_tickfont = {"size": 18},
+        yaxis_tickfont = {"size": 18},
+        title_x=0.5,
+        title_font_size = 22,
+        yaxis_range = [0,50]
+    )
+    
+    fig.update_traces(texttemplate='%{text}%',
+                      hovertemplate=None,
+                      marker_color=marker_colors)
+    
+    return fig
+    
+race_percent = bar_graph(race, 'race', 'percent_has_debt', 
+                      title="Percent of households with education debt by race",
+                      text='percent_has_debt', marker_colors = colors
+               )
+
+education_percent = bar_graph(education, 'edcl', 'percent_has_debt', 
+                           title="Percent of households with education debt by educaton level",
+                            text='percent_has_debt', marker_colors = colors
+               )
+
+age_percent = bar_graph(age, 'agecl', 'percent_has_debt', 
+                     title="Percent of households with education debt by age group",
+                     text='percent_has_debt', marker_colors = colors2
+               )
+
+income_percent = bar_graph(income, 'income_pp_quintile', 'percent_has_debt', 
+                        title="Percent of households with education debt by income quintile",
+                        text='percent_has_debt', marker_colors = colors3
+               )
+
+networth_percent = bar_graph(networth, 'networth_pp_quintile2', 'percent_has_debt', 
+                        title="Percent of households with education debt by networth quintile",
+                        text='percent_has_debt', marker_colors = colors3
+               )
+
+poor_percent = bar_graph(poor, 'original_poor', 'percent_has_debt', 
+                        title="Percent of households with education debt by poverty status",
+                        text='percent_has_debt', marker_colors = colors4
+               )
+
+def bar_graph2(df, x, y, title,text, marker_colors):
+
+    fig = px.bar(df, x=x, y=y,text=text, height=500, width=800)
+    
+    fig.add_annotation(text="All",
+                       font_color='red',
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=1.033, y=0.276, showarrow=False)
+    
+    fig.add_annotation(text="$3,654",
+                       font_color='red',
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=-0.068, y=0.24, showarrow=False)
+    
+    fig.add_shape(
+        type="line",
+        line=dict(dash="dot", color="red"),
+        x0=0.01,
+        x1=0.99,
+        xref="paper",
+        y0=3654,
+        y1=3654,
+        layer='below'
+    )
+    
+        
+    fig.update_layout(
+        title=title,
+        xaxis_title='',
+        yaxis_title='',
+        yaxis_ticksuffix='',
+        font=dict(family='Roboto'),
+        plot_bgcolor='white', 
+        uniformtext_minsize=20,
+        uniformtext_mode='hide',
+        xaxis_ticksuffix='',
+        yaxis_tickprefix='$',
+        yaxis_separatethousands=True,
+        xaxis_tickfont = {"size": 18},
+        yaxis_tickfont = {"size": 18},
+        title_x=0.5,
+        title_font_size = 22,
+        yaxis_range = [0,12_000]
+    )
+    
+    fig.update_traces(texttemplate='$%{text}',
+                      hovertemplate=None,
+                      marker_color=marker_colors)
+    
+    return fig
+    
+race_mean = bar_graph2(race, 'race', 'mean_debt', 
+                      title="Average household education debt by race",
+                      text='mean_debt', marker_colors = colors
+               )
+
+education_mean = bar_graph2(education, 'edcl', 'mean_debt', 
+                           title="Average household education debt by educaton level",
+                            text='mean_debt', marker_colors = colors
+               )
+
+age_mean = bar_graph2(age, 'agecl', 'mean_debt', 
+                     title="Average household education debt by age group",
+                     text='mean_debt', marker_colors = colors2
+               )
+
+income_mean = bar_graph2(income, 'income_pp_quintile', 'mean_debt', 
+                        title="Average household education debt by income quintile",
+                        text='mean_debt', marker_colors = colors3
+               )
+
+networth_mean = bar_graph2(networth, 'networth_pp_quintile2', 'mean_debt', 
+                        title="Average household education debt by networth quintile",
+                        text='mean_debt', marker_colors = colors3
+               )
+
+poor_mean = bar_graph2(poor, 'original_poor', 'mean_debt', 
+                        title="Average household education debt by poverty status",
+                        text='mean_debt', marker_colors = colors4
+               )
+
+def bar_graph3(df, x, y, title,text, marker_colors):
+
+    fig = px.bar(df, x=x, y=y,text=text, height=500, width=800)
+    
+    fig.add_annotation(text="All",
+                       font_color='red',
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=1.033, y=0.29, showarrow=False)
+    fig.add_annotation(text="15.9%",
+                       font_color='red',
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=-0.068, y=0.29, showarrow=False)
+    
+    fig.add_shape(
+        type="line",
+        line=dict(dash="dot", color="red"),
+        x0=0.01,
+        x1=0.99,
+        xref="paper",
+        y0=15.9,
+        y1=15.9,
+        layer='below'
+    )
+    
+        
+    fig.update_layout(
+        title=title,
+        xaxis_title='',
+        yaxis_title='',
+        font=dict(family='Roboto'),
+        plot_bgcolor='white', 
+        uniformtext_minsize=20,
+        uniformtext_mode='hide',
+        yaxis_ticksuffix='%',
+        yaxis_tickprefix='',
+        yaxis_separatethousands=True,
+        xaxis_tickfont = {"size": 18},
+        yaxis_tickfont = {"size": 18},
+        title_x=0.5,
+        title_font_size = 22,
+        yaxis_range = [0,50]
+    )
+    
+    fig.update_traces(texttemplate='%{text}%',
+                      hovertemplate=None,
+                      marker_color=marker_colors)
+    
+    return fig
+
+race_percent_ed = bar_graph3(race, 'race', 'percent_better_off_with_ed', 
+                      title="Percent of people better off with education debt cancellation<br>compared to budget equivalent UBI by race",
+                      text='percent_better_off_with_ed', marker_colors = colors
+               )
+
+education_percent_ed = bar_graph3(education, 'edcl', 'percent_better_off_with_ed', 
+                           title="Percent of people better off with education debt cancellation<br>compared to budget equivalent UBI by educaton level",
+                            text='percent_better_off_with_ed', marker_colors = colors
+               )
+
+age_percent_ed = bar_graph3(age, 'agecl', 'percent_better_off_with_ed', 
+                     title="Percent of people better off with education debt cancellation<br>compared to budget equivalent UBI by age group",
+                     text='percent_better_off_with_ed', marker_colors = colors2
+               )
+
+income_percent_ed = bar_graph3(income, 'income_pp_quintile', 'percent_better_off_with_ed', 
+                        title="Percent of people better off with education debt cancellation<br>compared to budget equivalent UBI by income quintile",
+                        text='percent_better_off_with_ed', marker_colors = colors3
+               )
+
+networth_percent_ed = bar_graph3(networth, 'networth_pp_quintile2', 'percent_better_off_with_ed', 
+                        title="Percent of people better off with education debt cancellation<br>compared to budget equivalent UBI by networth quintile",
+                        text='percent_better_off_with_ed', marker_colors = colors3
+               )
+
+poor_percent_ed = bar_graph3(poor, 'original_poor', 'percent_better_off_with_ed', 
+                        title="Percent of people better off with education debt cancellation<br>compared to budget equivalent UBI by poverty status",
+                        text='percent_better_off_with_ed', marker_colors = colors4
+               )
+
+
+
+race3 = race.copy(deep =True)
+education3 = education.copy(deep =True)
+age3 = age.copy(deep =True)
+income3 = income.copy(deep =True)
+networth3 = networth.copy(deep =True)
+poor3 = poor.copy(deep =True)
+
+race3 = race3.rename(columns={"percent_ed_debt_poor": "Education Debt Cancellation", "percent_ubi_poor": "UBI"})
+education3 = education3.rename(columns={"percent_ed_debt_poor": "Education Debt Cancellation", "percent_ubi_poor": "UBI"})
+age3 = age3.rename(columns={"percent_ed_debt_poor": "Education Debt Cancellation", "percent_ubi_poor": "UBI"})
+income3 = income3.rename(columns={"percent_ed_debt_poor": "Education Debt Cancellation", "percent_ubi_poor": "UBI"})
+networth3 = networth3.rename(columns={"percent_ed_debt_poor": "Education Debt Cancellation", "percent_ubi_poor": "UBI"})
+poor3 = poor3.rename(columns={"percent_ed_debt_poor": "Education Debt Cancellation", "percent_ubi_poor": "UBI"})
+
+
+def bar_graph4(df, x, title):
+    
+    fig = px.bar(df, x=x, y=['Education Debt Cancellation','UBI'], 
+                 height=500, width=800,
+                 barmode='group',color_discrete_map={'Education Debt Cancellation': BLUE, 'UBI': GRAY})
+    
+    fig.add_annotation(text="All: 8.6%",
+                       font_color=BLUE,
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=1.135, y=0.065, showarrow=False)
+
+    
+    fig.add_shape(
+        type="line",
+        line=dict(dash="dot", color=BLUE),
+        x0=0.01,
+        x1=0.99,
+        xref="paper",
+        y0=8.6,
+        y1=8.6,
+        layer='below'
+    )
+    
+    fig.add_annotation(text="All: 2.7%",
+                       font_color=GRAY,
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=1.135, y=0.0, showarrow=False)
+    
+    fig.add_shape(
+        type="line",
+        line=dict(dash="dot", color=GRAY),
+        x0=0.01,
+        x1=0.99,
+        xref="paper",
+        y0=2.7,
+        y1=2.7,
+        layer='below'
+    )
+     
+    fig.update_layout(
+        title=title,
+        xaxis_title='',
+        yaxis_title='',
+        font=dict(family='Roboto'),
+        plot_bgcolor='white', 
+        uniformtext_minsize=20,
+        uniformtext_mode='hide',
+        yaxis_ticksuffix='%',
+        yaxis_tickprefix='',
+        yaxis_separatethousands=True,
+        xaxis_tickfont = {"size": 18},
+        yaxis_tickfont = {"size": 18},
+        title_x=0.5,
+        title_font_size = 22,
+        yaxis_range = [0,90],
+        legend_title="Reform",
+
+    )
+    
+    fig.update_layout(barmode='group')
+    
+    fig.update_traces(hovertemplate=None)
+    
+    return fig
+
+race_poverty = bar_graph4(race3, x='race', title="Percent of people in poverty by race")
+education_poverty = bar_graph4(education3, x='edcl', title="Percent of people in poverty by education level")
+age_poverty = bar_graph4(age3, x='agecl', title="Percent of people in poverty by age group")
+income_poverty = bar_graph4(income3, x='income_pp_quintile', title="Percent of people in poverty income quintiles")
+networth_poverty = bar_graph4(networth3, x='networth_pp_quintile2', title="Percent of people in poverty by networth quintiles")
+poor_poverty = bar_graph4(poor3, x='original_poor', title="Percent of people in poverty by original poverty status")
+
+
+race4 = race.copy(deep =True)
+education4 = education.copy(deep =True)
+age4 = age.copy(deep =True)
+income4 = income.copy(deep =True)
+networth4 = networth.copy(deep =True)
+poor4 = poor.copy(deep =True)
+
+race4 = race4.rename(columns={"in_debt_no_ed_debt": "Education Debt Cancellation", "in_debt_ubi": "UBI"})
+education4 = education4.rename(columns={"in_debt_no_ed_debt": "Education Debt Cancellation", "in_debt_ubi": "UBI"})
+age4 = age4.rename(columns={"in_debt_no_ed_debt": "Education Debt Cancellation", "in_debt_ubi": "UBI"})
+income4 = income4.rename(columns={"in_debt_no_ed_debt": "Education Debt Cancellation", "in_debt_ubi": "UBI"})
+networth4 = networth4.rename(columns={"in_debt_no_ed_debt": "Education Debt Cancellation", "in_debt_ubi": "UBI"})
+poor4 = poor4.rename(columns={"in_debt_no_ed_debt": "Education Debt Cancellation", "in_debt_ubi": "UBI"})
+
+
+
+def bar_graph6(df, x, title):
+    
+    fig = px.bar(df, x=x, y=['Education Debt Cancellation','UBI'], 
+                 height=500, width=800,
+                 barmode='group',
+                 color_discrete_map={'Education Debt Cancellation': BLUE, 'UBI': GRAY})
+    
+    fig.add_annotation(text="4%",
+                       font_color=BLUE,
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=1.09, y=0.095, showarrow=False)
+
+    
+    fig.add_shape(
+        type="line",
+        line=dict(dash="dot", color=BLUE),
+        x0=0.01,
+        x1=0.99,
+        xref="paper",
+        y0=4,
+        y1=4,
+        layer='below'
+    )
+    
+    fig.add_annotation(text="6%",
+                       font_color=GRAY,
+                       font_size=18,
+                  xref="paper", yref="paper",
+                  x=1.09, y=0.155, showarrow=False)
+    
+    fig.add_shape(
+        type="line",
+        line=dict(dash="dot", color=GRAY),
+        x0=0.01,
+        x1=0.99,
+        xref="paper",
+        y0=6,
+        y1=6,
+        layer='below'
+    )
+     
+    fig.update_layout(
+        title=title,
+        xaxis_title='',
+        yaxis_title='',
+        font=dict(family='Roboto'),
+        plot_bgcolor='white', 
+        uniformtext_minsize=20,
+        uniformtext_mode='hide',
+        yaxis_ticksuffix='%',
+        yaxis_tickprefix='',
+        yaxis_separatethousands=True,
+        xaxis_tickfont = {"size": 18},
+        yaxis_tickfont = {"size": 18},
+        title_x=0.5,
+        title_font_size = 22,
+        yaxis_range = [0,32],
+        legend_title="Reform",
+
+    )
+    
+    fig.update_layout(barmode='group')
+    
+    fig.update_traces(hovertemplate=None)
+    
+    return fig
+
+race_debt = bar_graph6(race4, x='race', title="Percent of people in debt by race")
+education_debt = bar_graph6(education4, x='edcl', title="Percent of people in debt by education level")
+age_debt = bar_graph6(age4, x='agecl', title="Percent of people in debt by age group")
+income_debt = bar_graph6(income4, x='income_pp_quintile', title="Percent of people in debt by income quintile")
+networth_debt = bar_graph6(networth4, x='networth_pp_quintile2', title="Percent of people in debt by networth quintile")
+poor_debt = bar_graph6(poor4, x='original_poor', title="Percent of people in debt by original poverty status")
+
+
+race5 = race2.copy(deep =True)
+education5 = education2.copy(deep =True)
+age5 = age2.copy(deep =True)
+income5 = income2.copy(deep =True)
+networth5 = networth2.copy(deep =True)
+poor5 = poor2.copy(deep =True)
+
+race5 = race5.rename(columns={"ed_debt_gap_billions": "Education Debt Cancellation", "ubi_gap_billions": "UBI"})
+education5 = education5.rename(columns={"ed_debt_gap_billions": "Education Debt Cancellation", "ubi_gap_billions": "UBI"})
+age5 = age5.rename(columns={"ed_debt_gap_billions": "Education Debt Cancellation", "ubi_gap_billions": "UBI"})
+income5 = income5.rename(columns={"ed_debt_gap_billions": "Education Debt Cancellation", "ubi_gap_billions": "UBI"})
+networth5 = networth5.rename(columns={"ed_debt_gap_billions": "Education Debt Cancellation", "ubi_gap_billions": "UBI"})
+poor5 = poor5.rename(columns={"ed_debt_gap_billions": "Education Debt Cancellation", "ubi_gap_billions": "UBI"})
+
+def bar_graph5(df, x, title):
+    
+    fig = px.bar(df, x=x, y=['Education Debt Cancellation','UBI'], 
+                 height=500, width=800,
+                 barmode='group',
+                 color_discrete_map={'Education Debt Cancellation': BLUE, 'UBI': GRAY})
+     
+    fig.update_layout(
+        title=title,
+        xaxis_title='',
+        yaxis_title='',
+        font=dict(family='Roboto'),
+        plot_bgcolor='white', 
+        uniformtext_minsize=20,
+        uniformtext_mode='hide',
+        yaxis_ticksuffix='B',
+        yaxis_tickprefix='$',
+        yaxis_separatethousands=True,
+        xaxis_tickfont = {"size": 18},
+        yaxis_tickfont = {"size": 18},
+        title_x=0.5,
+        title_font_size = 22,
+        yaxis_range = [0,210],
+        legend_title="Reform",
+
+    )
+    
+    fig.update_layout(barmode='group')
+    
+    fig.update_traces(hovertemplate=None)
+    
+    return fig
+
+race_gap = bar_graph5(race5, x='race', title="Overall poverty gap by race")
+education_gap = bar_graph5(education5, x='edcl', title="Overall poverty gap by education level")
+age_gap = bar_graph5(age5, x='agecl', title="Overall poverty gap by age group")
+income_gap = bar_graph5(income5, x='income_pp_quintile', title="Overall poverty gap by income quintile")
+networth_gap = bar_graph5(networth5, x='networth_pp_quintile2', title="Overall poverty gap by networth quintile")
+poor_gap = bar_graph5(poor5, x='original_poor', title="Overall poverty gap by poverty status")
+
+card_main = dbc.Card(
+    [
+        dbc.CardBody(
+            [
+                html.H3("Select Data", style={'text-align': 'center',
+                                              'color': 'white'},
+                        className="card-title"),
+                html.Br(),
+                html.Label(['Select Chart:'],style={'font-weight': 'bold',
+                                                            "text-align": "center",
+                                                            "color": 'white',
+                                                            'fontSize':20}),
+                dcc.Dropdown(
+                            id='chart-choice',
+                            options=[
+                                    {'label': 'Percent with education debt', 'value': 'percent'},
+                                    {'label': 'Average education debt', 'value': 'mean'},
+                                    {'label': 'Percent better off with education debt cancellation over UBI', 'value': 'better_off'},
+                                    {'label': 'Poverty rates by reform', 'value': 'poverty'},
+                                    {'label': 'Poverty gap by reform', 'value': 'gap'},
+                                    {'label': 'Still in debt by reform', 'value': 'debt'}
+                                ],
+                                value='percent',
+                                ),
+                html.Br(),
+                html.Label(['Select Demographic:'],style={'font-weight': 'bold',
+                                                            "text-align": "center",
+                                                             "color":"white",
+                                                            'fontSize':20}),
+                dcc.Dropdown(
+                                    id='demo-choice',
+                                    options=[
+                                        {'label': 'Race', 'value': 'race'},
+                                        {'label': 'Education', 'value': 'education'},
+                                        {'label': 'Age', 'value': 'age'},
+                                        {'label': 'Income', 'value': 'income'},
+                                        {'label': 'Networth', 'value': 'networth'},
+                                        {'label': 'Poverty Status', 'value': 'poor'}
+
+                                    ],
+                                    value='race',
+                                ),
+                
+                
+            ]
+        ),
+    ],
+    color="info",   
+    outline=False,
+)
+
+
+
+card_graph = dbc.Card(
+        dcc.Graph(id='my-graph',
+              figure={}), body=True, color="info",
+)
+
+
+app = JupyterDash(__name__,
+                  external_stylesheets=[dbc.themes.FLATLY])
+
+app.layout = html.Div([
+        # Row 1 - header
+        html.Br(),
+        dbc.Row(
+            [
+            dbc.Col(html.H1("Comparing student debt cancellation to a budget equivalent UBI",
+            style={'text-align': 'center', 'color': '#1976D2', 'fontSize': 50}),
+                        width={'size': 8, 'offset': 2},
+                        ),
+            ]),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        dbc.Row([
+            dbc.Col(card_main, width=3),
+             dbc.Col(card_graph, width=6.8)],justify="around"),
+])
+
+@app.callback(
+    Output(component_id='my-graph', component_property='figure'),
+    Input(component_id='chart-choice', component_property='value'),
+    Input(component_id='demo-choice', component_property='value')
+)
+
+def interactive_chart(chart, demo):
+    if (chart == 'percent') & (demo=='race'):
+        return race_percent
+    if (chart == 'mean') & (demo=='race'):
+        return race_mean
+    if (chart == 'better_off') & (demo=='race'):
+        return race_percent_ed
+    if (chart == 'poverty') & (demo=='race'):
+        return race_poverty
+    if (chart == 'debt') & (demo=='race'):
+        return race_debt
+    if (chart == 'gap') & (demo=='race'):
+        return race_gap
+    
+    if (chart == 'percent') & (demo=='education'):
+        return education_percent
+    if (chart == 'mean') & (demo=='education'):
+        return education_mean
+    if (chart == 'better_off') & (demo=='education'):
+        return education_percent_ed
+    if (chart == 'poverty') & (demo=='education'):
+        return education_poverty
+    if (chart == 'debt') & (demo=='education'):
+        return education_debt
+    if (chart == 'gap') & (demo=='education'):
+        return education_gap
+    
+    if (chart == 'percent') & (demo=='age'):
+        return age_percent
+    if (chart == 'mean') & (demo=='age'):
+        return age_mean
+    if (chart == 'better_off') & (demo=='age'):
+        return age_percent_ed
+    if (chart == 'poverty') & (demo=='age'):
+        return age_poverty
+    if (chart == 'debt') & (demo=='age'):
+        return age_debt
+    if (chart == 'gap') & (demo=='age'):
+        return age_gap
+    
+    if (chart == 'percent') & (demo=='income'):
+        return income_percent
+    if (chart == 'mean') & (demo=='income'):
+        return income_mean
+    if (chart == 'better_off') & (demo=='income'):
+        return income_percent_ed
+    if (chart == 'poverty') & (demo=='income'):
+        return income_poverty
+    if (chart == 'debt') & (demo=='income'):
+        return income_debt
+    if (chart == 'gap') & (demo=='income'):
+        return income_gap
+    
+    if (chart == 'percent') & (demo=='networth'):
+        return networth_percent
+    if (chart == 'mean') & (demo=='networth'):
+        return networth_mean
+    if (chart == 'better_off') & (demo=='networth'):
+        return networth_percent_ed
+    if (chart == 'poverty') & (demo=='networth'):
+        return networth_poverty
+    if (chart == 'debt') & (demo=='networth'):
+        return networth_debt
+    if (chart == 'gap') & (demo=='networth'):
+        return networth_gap
+    
+    if (chart == 'percent') & (demo=='poor'):
+        return poor_percent
+    if (chart == 'mean') & (demo=='poor'):
+        return poor_mean
+    if (chart == 'better_off') & (demo=='poor'):
+        return poor_percent_ed
+    if (chart == 'poverty') & (demo=='poor'):
+        return poor_poverty
+    if (chart == 'debt') & (demo=='poor'):
+        return poor_debt
+    elif (chart == 'gap') & (demo=='poor'):
+        return poor_gap
+    
+    
+       
+app.run_server(mode='external')
